@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # define porta e arquivos de saída
 readonly PORT_LISTEN=12345;
