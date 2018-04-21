@@ -4,43 +4,98 @@
 readonly PORT_LISTEN=12345;
 readonly PORT_LISTEN_CLIENT=54321;
 readonly SERVER_FILE=server.out;
-
+readonly SERVER_LOG=server.log;
+readonly TMQ=1;
+CLIENT_IP=localhost;
+CLIENT_PORT=localhost;
 # fecha porta ao finalizar com CTRL+C
-trap 'echo "Fechando a porta do servidor | port: ${PORT_LISTEN}"; fuser -k -n tcp "${PORT_LISTEN}"; exit' INT
+trap 'escreveLog "Fechando a porta do servidor | port: ${PORT_LISTEN}"; fuser -k -n tcp "${PORT_LISTEN}"; escreveLog "Servidor finalizado"; exit' INT
 
-echo "Iniciando servidor na porta: ${PORT_LISTEN} com arquivo: ${SERVER_FILE}";
-nc -k -l "${PORT_LISTEN}" | tee "${SERVER_FILE}" &
+obterIpCliente(){
+    OK=false;
+    while [ OK != "true" ]; do
+        tmpNetworkString=$(lsof -i:"${PORT_LISTEN}" | grep "localhost:${PORT_LISTEN} (ESTABLISHED)" | awk '{print $9}');
+        if [ -s "${SERVER_FILE}" ] && [ ! -z "${tmpNetworkString}" ]; then
+            OK=true;
+            CLIENT_IP=$(echo $tmpNetworkString | cut -d':' -f1);
+            CLIENT_PORT=$(echo $tmpNetworkString | cut -d'-' -f1 | cut -d':' -f2);
+        fi
+    done
+}
 
-echo "Aguardando pela conexão...";
+escreveLog(){
+    echo -n $(date) >> ${SERVER_LOG};
+    echo ": $*" >> ${SERVER_LOG};
+}
 
-while true;
-do
-    tmpNetworkString=$(lsof -i:"${PORT_LISTEN}" | grep "localhost:${PORT_LISTEN} (ESTABLISHED)" | awk '{print $9}');
-    echo -n "${tmpNetworkString}";
-    if [ -s "${SERVER_FILE}" ] && [ ! -z "${tmpNetworkString}" ]; then
-        answer=$(cat "${SERVER_FILE}");
-        echo "Connection received on port ${PORT_LISTEN}...";
-        incomingIP=$(echo $tmpNetworkString | cut -d':' -f1);
-        incomingPort=$(echo $tmpNetworkString | cut -d'-' -f1 | cut -d':' -f2);
-        echo ">>Incoming traffic IP: ${incomingIP}";
-        echo ">>Incoming traffic Port: ${incomingPort}";
-        echo "Answering on IP: ${incomingIP}, port: ${PORT_LISTEN_CLIENT}...";
+# código conversor retirado de https://unix.stackexchange.com/questions/98948/ascii-to-binary-and-binary-to-ascii-conversion-tools
+ordbin(){
+  a=$(printf '%d' "'$1")
+  echo "obase=2; $a" | bc
+}
 
-        # aguardando o cliente estar pronto
-        nc -z "${incomingIP}" "${PORT_LISTEN_CLIENT}";
-        isOpen=$?;
-        while [ ! "${isOpen}" -eq 0 ];
-        do
-            nc -z "${incomingIP}" "${PORT_LISTEN_CLIENT}";
-            isOpen=$?;
-        done
+chrbin() {
+        echo $(printf \\$(echo "ibase=2; obase=8; $1" | bc))
+}
 
-        # envia um oi
-        echo "Oi, turu bom?" | nc -q 2 "${incomingIP}" "${PORT_LISTEN_CLIENT}";
+converterAsciiParaBinario(){
+   echo -n $* | while IFS= read -r -n1 char
+    do
+        result=$(ordbin $char | tr -d '\n')
+        echo $result
+       # echo -n " "
+    done
+}
 
-        echo "Fechando a porta do servidor | porta: ${PORT_LISTEN}";
-        fuser -k -n tcp "${PORT_LISTEN}";
+converterBinarioParaAscii() {
+    for bin in $*
+    do
+        chrbin $bin | tr -d '\n'
+    done
 
-        exit 0;
-    fi
+}
+
+junta(){ local IFS="$1"; shift; echo "$*"; }
+
+if [ -e ${SERVER_LOG} ]; then
+    rm ${SERVER_LOG} ;
+    escreveLog "Removendo arquivo antigo de log"
+fi
+
+while true; do
+    escreveLog "Iniciando servidor na porta: ${PORT_LISTEN} com arquivo: ${SERVER_FILE}";
+    nc -I $TMQ -O $TMQ -k -l "${PORT_LISTEN}" | tee "${SERVER_FILE}" &
+
+    escreveLog "Aguardando pela conexão...";
+
+    while true; do
+        content=$(cat ${SERVER_FILE});
+        content=${content:0:8};
+        #echo "content ${content}";
+        case ${content} in
+            "TMQ")
+                #obterIpCliente;
+                escreveLog "Cliente conectado | ip: ${CLIENT_IP} porta: ${CLIENT_PORTA}";
+                escreveLog "Mensagem recebida: ${content}";
+                escreveLog "Enviando TMQ";
+                echo "$TMQ" | nc -q 2 "${CLIENT_IP}" "${PORT_LISTEN_CLIENT}";
+                ;;
+            "10101010")
+                escreveLog "Recebendo quadro";
+                v_mensagem=$(cat ${SERVER_FILE});
+                v_mensagem="${v_mensagem:352}";
+                v_mensagem="${v_mensagem:0:$((${#v_mensagem}-32))}";
+                #v_mensagem=$(converterBinarioParaAscii ${v_mensagem});
+                escreveLog "Mensagem recebida no quadro: ${v_mensagem}";
+                echo "OK" | nc -q 2 "${CLIENT_IP}" "${PORT_LISTEN_CLIENT}";
+                ;;
+            "FIM")
+                escreveLog "Mensagem recebida: ${content}";
+                escreveLog "Cliente desconectado | porta: ${PORT_LISTEN}"
+                ;;
+            *)
+            ;;
+        esac
+        cat /dev/null > "${SERVER_FILE}";
+    done
 done
