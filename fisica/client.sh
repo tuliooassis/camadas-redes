@@ -6,23 +6,24 @@ readonly CLIENT_FILE=client.out;
 readonly SERVER_PORT=12345;
 readonly SERVER_IP=localhost
 
-converterAsciiParaBinario(){
-    v_mensagem="$1";
-    v_comando="";
-    for (( i = 2; i <= ${#1} + 1; i++ )); do
-        v_comando="${v_comando} \$$i";
-    done
-    v_comando="${v_comando}";
-
-    v_binario="echo ${v_mensagem} | xxd -b | awk '{print ${v_comando}}'"; #erro aqui, n sei pq
-    v_binario=$(${v_binario});
-    echo "imprimindo binario ${v_binario}";
-    return ${v_binario};
+ordbin(){
+  a=$(printf '%d' "'$1")
+  echo "obase=2; $a" | bc
 }
 
-criaQuadro (){
-        v_mensagem=$1;
+converterAsciiParaBinario(){
+   echo -n $* | while IFS= read -r -n1 char
+    do
+        result=$(ordbin $char | tr -d '\n')
+	echo $result
+       # echo -n " "
+    done
+}
 
+junta(){ local IFS="$1"; shift; echo "$*"; }
+
+criaQuadro (){
+        v_mensagem=$*;
         #Início cabeçalho da camada física
             #Preâmbulo (7 bytes) de 0s e 1s alternados para alertar a chegada de um quadro e permitir a sincronização
             v_preambulo='10101010101010101010101010101010101010101010101010101010';
@@ -32,22 +33,29 @@ criaQuadro (){
             v_inicioQuadro='10101011';
         #Fim cabeçalho da camada física
 
-        #Endereço MAC de destino (6 bytes) é o endereço da camada de enlace de destino que receberá o pacote
-        v_endDestino=$(arp ${SERVER_IP} -a | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}');
-        #v_endDestino=$(echo "obase=2;${v_endDestino}" | bc10);
-        echo "${v_endDestino}";
-
-        #Endereço MAC de origem (6 bytes) é o endereço da camada de enlace do remetente do pacote
+	#Endereço MAC de origem (6 bytes) é o endereço da camada de enlace do remetente do pacote
         v_endOrigem=$(cat /sys/class/net/$(ip route show default | awk '/default/ {print $5}')/address);
         #v_endOrigem=$(echo "obase=2;${v_endOrigem}" | bc10);
-        echo "${v_endOrigem}";
+        echo "MAC de origem: ${v_endOrigem}";
+
+        #Endereço MAC de destino (6 bytes) é o endereço da camada de enlace de destino que receberá o pacote
+	#se o IP do servidor for localhost, MAC de origem = MAC destino
+	if [ "$SERVER_IP" == "localhost" ]; then
+		v_endDestino=$v_endOrigem;
+	#se não for localhost pega MAC do outro pc
+	else
+		v_endDestino=$(arp ${SERVER_IP} -a | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+		#v_endDestino=$(echo "obase=2;${v_endDestino}" | bc10);
+	fi
+        echo "MAC de destino: ${v_endDestino}";
 
         #Tipo (2 bytes) possui o protocolo da camada superior cujo pacote está encapsulado no quadro. Ex.: IP
         v_tipo='0000000011111111'
 
-        #Dados
+        #Dados em binário 
         #v_dados=$(echo "obase=2;${v_mensagem}" | bc10);
-        echo ${v_dados};
+	v_dados=$(junta "" ${v_mensagem})
+        echo "Mensagem em binario no quadro: $v_dados";
 
         #CRC: detecção de erros (4 bytes)
         v_crc='11111111111111111111111111111111';
@@ -56,8 +64,10 @@ criaQuadro (){
 
         return ${quadro};
 }
-converterAsciiParaBinario "Ola";
-quadd=$(criaQuadro "oi");
+echo "Mensagem em binario:";
+binario=$(converterAsciiParaBinario "Ola")
+echo $binario
+quadd=$(criaQuadro $binario);
 echo "imprimindo";
 echo "${quadd}";
 
