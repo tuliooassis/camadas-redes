@@ -49,6 +49,7 @@ criaQuadro (){
     #echo "MAC de origem: ${v_endOrigem}";
     v_endOrigemBin=$(converterAsciiParaBinario ${v_endOrigem});
     v_endOrigemBin=$(junta "" ${v_endOrigemBin});
+
     #echo "MAC de origem binário: ${v_endOrigemBin}";
 
 
@@ -73,15 +74,14 @@ criaQuadro (){
     #echo "Mensagem do quadro: $v_dados";
     v_dadosBin=$(converterAsciiParaBinario ${v_dados});
     #echo "Mensagem do quadro binário1: $v_dadosBin";
-    v_dadosBin=$(junta "" ${v_dadosBin});
+    #v_dadosBin=$(junta "" ${v_dadosBin});
     #echo "Mensagem do quadro binário: $v_dadosBin";
-
     #CRC: detecção de erros (4 bytes)
     v_crc='11111111111111111111111111111111';
 
     quadro="${v_preambulo}${v_inicioQuadro}${v_endDestinoBin}${v_endOrigemBin}${v_tipo}${v_dadosBin}${v_crc}";
     #echo "Quadro completo: ${quadro}"
-    echo "${quadro}";
+    echo $quadro;
 }
 
 if [ -e ${CLIENT_LOG} ]; then
@@ -91,7 +91,6 @@ fi
 
 escreveLog "Criando quadro"
 quadro=$(criaQuadro $*);
-
 
 escreveLog "Iniciando cliente na porta: ${PORT_LISTEN} com arquivo: ${CLIENT_FILE}";
 nc -k -l "${PORT_LISTEN}" > "${CLIENT_FILE}" &
@@ -115,7 +114,6 @@ escreveLog "Recebe TMQ"
 TMQ=$(cat ${CLIENT_FILE});
 escreveLog "Fechando a porta do cliente | porta: ${PORT_LISTEN}";
 fuser -k -n tcp "${PORT_LISTEN}";
-
 escreveLog "Iniciando cliente na porta: ${PORT_LISTEN} com arquivo: ${CLIENT_FILE}";
 nc -I $TMQ -O $TMQ -k -l "${PORT_LISTEN}" | tee "${CLIENT_FILE}" &
 

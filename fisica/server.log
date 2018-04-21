@@ -1,0 +1,10 @@
+sáb abr 21 19:12:40 -03 2018: Removendo arquivo antigo de log
+sáb abr 21 19:12:40 -03 2018: Iniciando servidor na porta: 12345 com arquivo: server.out
+sáb abr 21 19:12:40 -03 2018: Aguardando pela conexão...
+sáb abr 21 19:12:41 -03 2018: Cliente conectado | ip: localhost porta: 
+sáb abr 21 19:12:41 -03 2018: Mensagem recebida: TMQ
+sáb abr 21 19:12:41 -03 2018: Enviando TMQ
+sáb abr 21 19:12:43 -03 2018: Recebendo quadro
+sáb abr 21 19:12:43 -03 2018: Mensagem recebida no quadro: o l a t u r o b o m
+sáb abr 21 19:12:57 -03 2018: Fechando a porta do servidor | port: 12345
+sáb abr 21 19:12:57 -03 2018: Servidor finalizado

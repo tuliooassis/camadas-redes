@@ -50,7 +50,8 @@ converterAsciiParaBinario(){
 converterBinarioParaAscii() {
     for bin in $*
     do
-        chrbin $bin | tr -d '\n'
+        result=$(chrbin $bin | tr -d '\n')
+	echo $result
     done
 
 }
@@ -69,7 +70,7 @@ while true; do
     escreveLog "Aguardando pela conexão...";
 
     while true; do
-        content=$(cat ${SERVER_FILE});
+        content=$(cat $SERVER_FILE);
         content=${content:0:8};
         #echo "content ${content}";
         case ${content} in
@@ -85,8 +86,11 @@ while true; do
                 v_mensagem=$(cat ${SERVER_FILE});
                 v_mensagem="${v_mensagem:352}";
                 v_mensagem="${v_mensagem:0:$((${#v_mensagem}-32))}";
-                #v_mensagem=$(converterBinarioParaAscii ${v_mensagem});
-                escreveLog "Mensagem recebida no quadro: ${v_mensagem}";
+                v_mensagem=$(converterBinarioParaAscii $v_mensagem);
+		#printf "%s"  "${v_mensagem[*]}"
+		echo "Mensagem recebida:"
+		echo $v_mensagem
+                escreveLog "Mensagem recebida no quadro: $(echo $v_mensagem)";
                 echo "OK" | nc -q 2 "${CLIENT_IP}" "${PORT_LISTEN_CLIENT}";
                 ;;
             "FIM")

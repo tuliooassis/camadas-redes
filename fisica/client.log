@@ -1,0 +1,12 @@
+sáb abr 21 19:12:41 -03 2018: Removendo arquivo antigo de log
+sáb abr 21 19:12:41 -03 2018: Criando quadro
+sáb abr 21 19:12:41 -03 2018: Iniciando cliente na porta: 54321 com arquivo: client.out
+sáb abr 21 19:12:41 -03 2018: Conectando no servidor de ip: localhost, na porta: 12345 e esperando por resposta
+sáb abr 21 19:12:41 -03 2018: Aguardando o servidor ficar pronto
+sáb abr 21 19:12:41 -03 2018: Solicita TMQ
+sáb abr 21 19:12:43 -03 2018: Recebe TMQ
+sáb abr 21 19:12:43 -03 2018: Fechando a porta do cliente | porta: 54321
+sáb abr 21 19:12:43 -03 2018: Iniciando cliente na porta: 54321 com arquivo: client.out
+sáb abr 21 19:12:43 -03 2018: Envia quadro para o servidor
+sáb abr 21 19:12:45 -03 2018: Envia finalizar para o servidor
+sáb abr 21 19:12:47 -03 2018: Fechando a porta do cliente | porta: 54321
