@@ -1,0 +1,5 @@
+# files out
+*.out
+
+# files log
+*.log
