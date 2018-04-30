@@ -6,7 +6,7 @@ Grupo: Luiza Souza, Marcela Viana, Túlio Moreira, Vinícius Silveira
 Link para vídeo explicativo:
 https://www.youtube.com/watch?v=PBUNACHxNv8&feature=youtu.be 
 
-## Camada física: shell script
+## Camada física: Shell Script
 
 Requisitos:
 > Instalação do comando "arp" no terminal. Pode ser feito com o seguinte comando:
@@ -14,7 +14,7 @@ Requisitos:
 
 Para a implementação da primeira parte da pilha de protocolos (camada física) foi utilizada a linguagem Shell Script. O objetivo é a implementação do modelo cliente-servidor usando uma conexão TCP para fazer a transferência entre dois hosts. A implementação foi dividida em dois códigos: código do servidor (server.sh) e código do cliente (client.sh). O Quadro Ethernet enviado do cliente para o servidor em um arquivo texto está dentro da definição RFC (convertido para bits). Há também dois logs (log do servidor e log do cliente) para que seja possível acompanhar o funcionamento dos programas.
 
-## client.sh
+### client.sh
 Foi definido primeiro algumas variáveis de apenas leitura, como por exemplo, a porta que vai ser escutada, as variáveis que referenciam os arquivos de log e o servidor IP que será utilizado.
 
 Há uma trap que identifica o sinal CTRL+C que escreve no log que está finalizando o cliente quando recebe o sinal (o cliente poderá enviar quadros enquanto não receber o sinal CTRL+C para finalizar o programa).
@@ -30,7 +30,7 @@ Após a função de criação do quadro, há uma função para remoção de logs
 Após isso iniciou-se a criação do arquivo de log do cliente. Escreve-se no log “Criando quadro”, e o arquivo .txt é lido e enviado para a função de criação do quadro, que retorna o quadro enviado. Após isso escreve-se “Tentando enviar o quadro”, e uma tentativa de envio será feita utilizando números aleatórios; se o número aleatório gerado for par há um erro no envio e a mensagem “Erro ao enviar, tentando novamente...” é escrita no log, indicando que não foi possível enviar o quadro (isso simula uma colisão de pacotes por exemplo) e uma novas tentativas de envio são feitas até que seja possível enviar o quadro. Quando for possível enviar, escreve-se no log “Enviando o quadro [identificador do quadro] na porta [identificador da porta]” e o quadro é efetivamente enviado utilizando-se o comando nc (netcat, esse é o comando mais importante do programa, que abre uma conexão TCP conectando cliente e servidor para o envio do quadro). Após isso é escrito no log do cliente “Quadro enviado com sucesso” e depois “Finalizando o cliente” e finaliza-se o código do cliente.
 
 
-## server.sh
+### server.sh
 Foram definidas da mesma maneira que no cliente algumas variáveis importantes de apenas leitura, referentes aos endereços dos arquivos de log e porta que irá escutar.
 
 Também há a presença do comando trap que verifica o sinal CTRL+C para finalização do programa (o servidor ficará rodando e disponível para o recebimento de quadros enquanto não receber o sinal CTRL+C).
