@@ -1,12 +1,12 @@
 	 	 	
 # camadas-redes 
 Implementação da Pilha de Protocolos TCP/IP, referentes ao trabalho prático de Redes de Computadores I 
-Grupo: Luiza Souza, Marcela Viana, Túlio Moreira, Vinícius Silveira
-
-Link para vídeo explicativo:
-https://www.youtube.com/watch?v=PBUNACHxNv8&feature=youtu.be 
+Grupo: Luiza Souza, Marcela Viana, Túlio Moreira, Vinícius Silveira 
 
 ## Camada física: Shell Script
+
+Link para vídeo explicativo:
+https://www.youtube.com/watch?v=PBUNACHxNv8&feature=youtu.be
 
 Requisitos:
 > Instalação do comando "arp" no terminal. Pode ser feito com o seguinte comando:
