@@ -60,7 +60,7 @@ Requisitos:
 Link para vídeo explicativo:
 https://www.youtube.com/watch?v=JfdwxAoFJQA&feature=youtu.be
 
-São definidas primeiramente 4 variáveis: http requere o objeto do tipo http para que seja possível utilizar este protocolo; port (54321) que é o número da porta em que o servidor escuta; ip que pode ser localhost ou um ip de um computador que está na mesma rede do server.js e fs que guarda um objeto do tipo fs que possibilida a leitura da página http.
+São definidas primeiramente 4 variáveis: http requere o objeto do tipo http para que seja possível utilizar este protocolo; port (54321) que é o número da porta em que o servidor escuta; ip que pode ser localhost ou um ip de um computador que está na mesma rede do servidor e fs que guarda um objeto do tipo fs que possibilida a leitura da página http.
 
 Na função logo em seguida às variáveis criamos o servidor que responde com uma página (index.html) quando solicitado; essa página deve estar no mesmo diretório do código do server.js. Caso a página exista e o servidor esteja rodando, ele irá reponder com a página e esta será exibida no browser; caso a página não exista será enviada a mensagem "not found".
 
