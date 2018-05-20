@@ -44,7 +44,8 @@ Após isso começamos a escrever no log do servidor. Escrevemos a mensagem “Se
 O funcionamento dos códigos do cliente e do servidor assim como mais detalhes de como a implementação foi feita podem ser conferidos no vídeo explicativo (link no início da documentação).
 
 Execução: ./server.sh
-          ./client.sh
+          
+	  ./client.sh [filename]
 
 ## Camada de aplicação: Nodejs
 
@@ -55,6 +56,13 @@ Requisitos:
 ### server.js
 
 Link para vídeo explicativo:
+https://www.youtube.com/watch?v=JfdwxAoFJQA&feature=youtu.be
+
+São definidas primeiramente 4 variáveis: http requere o objeto do tipo http para que seja possível utilizar este protocolo; port(54321) que é o número da porta em que o servidor escuta; ip que pode ser localhost ou um ip de um computador que está na mesma rede e fs que guarda um objeto do tipo fs que possibilida a leitura da página http.
+
+Na função logo em seguida às variáveis criamos o servidor que responde com uma página (index.html) quando solicitado; essa página deve estar no mesmo diretório do código do server.js. Caso a página exista e o servidor esteja rodando, ele irá reponder com a página e esta será exibida no browser; caso a página não exista será enviada a mensagem "not found".
+
+O código em seguidá à função coloca o servidor para escutar na porta e IP especificados e apenas exibe a mensagem que o servidor está rodando corretamente e pode ser finalizado em o comando CTRL + C que irá parar o programa server.js.
 
 O servidor escuta através de uma porta (54321) e aguarda uma requisição do cliente. A requisição da página é feita digitando no browser o IP da máquina onde está rodando o server.js (ou localhost caso a requisição seja feita na mesma máquina que está rodando o servidor) juntamente com a porta em que o servidor escuta. O server.js deve estar na mesma rede da máquina que gera a requisição da página. A requisição HTTP da página feita no brower é enviada para a camada física, primeiramente para o client.sh, que encapsula a mensagem de requisição em um quadro, envia o quadro para o server.sh (conforme explicado na seção anterior) e em seguida a requisição é enviada para o server.js, que lê a mensagem encapsulada dentro do quadro e responde com a página HTML solicitada.
 
