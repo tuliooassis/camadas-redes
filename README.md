@@ -70,6 +70,8 @@ O servidor escuta através de uma porta (54321) e aguarda uma requisição do cl
 
 Por decisão de implementação, a comunicação entre as camadas foi realizada utilizando-se sockets.
 
+Mais detalhes da implementação podem ser conferidos no vídeo explicativo (link acima).
+
 Execução: 
           
           nodejs server.js
