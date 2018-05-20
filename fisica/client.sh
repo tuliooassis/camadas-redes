@@ -2,6 +2,8 @@
 
 # define portas e arquivos de saída
 readonly PORT_LISTEN=54321;
+readonly CLIENT_IP=localhost;
+readonly CLIENT_AUX=client.aux;
 readonly CLIENT_FILE=client.out;
 readonly CLIENT_LOG=client.log;
 readonly SERVER_PORT=12345;
@@ -90,7 +92,8 @@ if [ -e ${CLIENT_LOG} ]; then
 fi
 
 escreveLog "Criando quadro"
-cat $* > ${CLIENT_FILE}
+nc -l -w 3 ${CLIENT_IP} ${PORT_LISTEN} > ${CLIENT_AUX}
+cat ${CLIENT_AUX} > ${CLIENT_FILE}
 mensagem=$(cat $CLIENT_FILE)
 quadro=$(criaQuadro ${mensagem});
 echo ${quadro} > ${CLIENT_FILE}
