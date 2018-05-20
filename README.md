@@ -43,7 +43,9 @@ Após isso começamos a escrever no log do servidor. Escrevemos a mensagem “Se
 
 O funcionamento dos códigos do cliente e do servidor assim como mais detalhes de como a implementação foi feita podem ser conferidos no vídeo explicativo (link no início da documentação).
 
-Execução: ./server.sh
+Execução: 
+
+	  ./server.sh
           
 	  ./client.sh [filename]
 
@@ -68,4 +70,6 @@ O servidor escuta através de uma porta (54321) e aguarda uma requisição do cl
 
 Por decisão de implementação, a comunicação entre as camadas foi realizada utilizando-se sockets.
 
-Execução: nodejs server.js
+Execução: 
+          
+          nodejs server.js
