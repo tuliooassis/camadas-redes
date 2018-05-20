@@ -42,3 +42,22 @@ Após isso começamos a escrever no log do servidor. Escrevemos a mensagem “Se
 
 
 O funcionamento dos códigos do cliente e do servidor assim como mais detalhes de como a implementação foi feita podem ser conferidos no vídeo explicativo (link no início da documentação).
+
+Execução: ./server.sh
+          ./client.sh
+
+## Camada de aplicação: Nodejs
+
+Requisitos:
+> Instalação do comando "nodejs" no terminal. Pode ser feito com o seguinte comando:
+- sudo apt-get install nodejs
+
+### server.js
+
+Link para vídeo explicativo:
+
+O servidor escuta através de uma porta (54321) e aguarda uma requisição do cliente. A requisição da página é feita digitando no browser o IP da máquina onde está rodando o server.js (ou localhost caso a requisição seja feita na mesma máquina que está rodando o servidor) juntamente com a porta em que o servidor escuta. O server.js deve estar na mesma rede da máquina que gera a requisição da página. A requisição HTTP da página feita no brower é enviada para a camada física, primeiramente para o client.sh, que encapsula a mensagem de requisição em um quadro, envia o quadro para o server.sh (conforme explicado na seção anterior) e em seguida a requisição é enviada para o server.js, que lê a mensagem encapsulada dentro do quadro e responde com a página HTML solicitada.
+
+Por decisão de implementação, a comunicação entre as camadas foi realizada utilizando-se sockets.
+
+Execução: nodejs server.js
