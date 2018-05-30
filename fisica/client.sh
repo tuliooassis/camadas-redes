@@ -1,48 +1,16 @@
 #!/bin/bash
+source common.sh
 
 # define portas e arquivos de saída
 readonly PORT_LISTEN=54321;
-readonly CLIENT_IP=localhost;
-readonly CLIENT_AUX=client.aux;
 readonly CLIENT_FILE=client.out;
-readonly CLIENT_LOG=client.log;
+readonly CLIENT_FILE_RECEIVE=client_receive.out;
+readonly FILE_LOG=client.log;
 readonly SERVER_PORT=12345;
 readonly SERVER_IP=localhost;
 
 # fecha porta ao finalizar com CTRL+C
-trap 'escreveLog "Finalizando cliente"; exit' INT
-
-escreveLog(){
-    echo -n $(date) >> ${CLIENT_LOG};
-    echo ": $*" >> ${CLIENT_LOG};
-}
-
-# código conversor retirado de https://unix.stackexchange.com/questions/98948/ascii-to-binary-and-binary-to-ascii-conversion-tools
-ordbin(){
-  a=$(printf '%08d' "'$1")
-  echo "obase=2; $a" | bc
-}
-
-converterAsciiParaBinario(){
-   echo -n $* | while IFS= read -r -n1 char
-    do
-        result=$(ordbin $char | tr -d '\n')
-        if [ $result == "0" ]; then
-            echo "00100000";
-            continue
-        fi
-        while [ ${#result} -lt 8 ]; do
-            result="0$result"
-        done
-	    echo "$result "
-    done
-}
-
-junta(){
-    local IFS="$1";
-    shift;
-    echo "$*";
-}
+trap 'escreveLog "Finalizando cliente e fechando a porta ${PORT_LISTEN}"; fuser -k -n tcp ${PORT_LISTEN}; exit' INT
 
 criaQuadro (){
     v_mensagem=$*;
@@ -86,14 +54,12 @@ criaQuadro (){
     echo $quadro;
 }
 
-if [ -e ${CLIENT_LOG} ]; then
-    rm ${CLIENT_LOG} ;
-    escreveLog "Removendo arquivo antigo de log"
-fi
+removeLog;
+
+nc -k -l "${PORT_LISTEN}" > "${CLIENT_FILE_RECEIVE}" &
 
 escreveLog "Criando quadro"
-nc -l -w 3 ${CLIENT_IP} ${PORT_LISTEN} > ${CLIENT_AUX}
-cat ${CLIENT_AUX} > ${CLIENT_FILE}
+echo $1 > ${CLIENT_FILE}
 mensagem=$(cat $CLIENT_FILE)
 quadro=$(criaQuadro ${mensagem});
 echo ${quadro} > ${CLIENT_FILE}
@@ -105,10 +71,22 @@ while [ $((${tentativa}%2)) -eq 0 ]; do
     tentativa=$(( ( RANDOM % 10 )  + 1 ));
 done
 
-escreveLog "Eviando o quadro ${CLIENT_FILE} na porta ${PORT_LISTEN}";
-nc ${SERVER_IP} ${SERVER_PORT} < ${CLIENT_FILE};
+escreveLog "Eviando o quadro ${CLIENT_FILE} no IP ${SERVER_IP} na porta ${SERVER_PORT}";
+cat ${CLIENT_FILE} | nc -q 2 "${SERVER_IP}" "${SERVER_PORT}";
 
 escreveLog "Quadro enviado com sucesso!"
 
-escreveLog "Finalizando o cliente";
-exit 0;
+escreveLog "Aguardando resposta do servidor"
+while true; do
+    if [ -s "${CLIENT_FILE_RECEIVE}" ]; then
+        escreveLog "Obtendo resposta do servidor"
+        quadro=$(cat ${CLIENT_FILE_RECEIVE});
+        mensagem=$(obterMensagem $quadro);
+        escreveLog "Mensagem recebida no quadro: $(echo $mensagem)";
+        echo $mensagem > $1;
+        escreveLog "Finalizando cliente e fechando a porta ${PORT_LISTEN}";
+        fuser -k -n tcp "${PORT_LISTEN}";
+        rm -f "${CLIENT_FILE_RECEIVE}";
+        exit 0;
+    fi
+done
