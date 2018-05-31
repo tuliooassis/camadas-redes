@@ -1,5 +1,5 @@
 #!/bin/bash
-source common.sh
+source ../fisica/common.sh
 
 # define porta e arquivos de saída
 readonly PORT_LISTEN=12345;
@@ -8,6 +8,8 @@ readonly FILE_LOG=server.log;
 
 readonly PORT_CLIENT=54321;
 IP_CLIENT=localhost;
+
+readonly PORT_SERVER_APP=5678;
 
 # fecha porta ao finalizar com CTRL+C
 trap 'escreveLog "Finalizando servidor e fechando a porta ${PORT_LISTEN}"; fuser -k -n tcp ${PORT_LISTEN}; exit' INT
@@ -71,19 +73,19 @@ while true; do
         quadro=$(cat ${SERVER_FILE});
         mensagem=$(obterMensagem $quadro);
         escreveLog "Mensagem recebida no quadro: $(echo $mensagem)";
-        echo "Mensagem recebida no quadro: $(echo $mensagem)";
+        cp /dev/null ${SERVER_FILE};
+        #echo "Mensagem recebida no quadro: $(echo $mensagem)";
 
-        escreveLog "Respondendo com conteúdo de ../public/$(echo $mensagem) para $IP_CLIENT:$PORT_CLIENT";
+        #solicita conteúdo para a camada de aplicação e envia resposta para o arquivo temporário
+        echo "echo -n '$mensagem'" | nc -q 2 "localhost" "${PORT_SERVER_APP}" > ${SERVER_FILE};
 
-        if [ -e "../public/"$mensagem ]; then
-            mensagem=$(cat "../public/"$mensagem);
-            quadro=$(criaQuadro ${mensagem});
-            echo $quadro | nc -q 2 "${IP_CLIENT}" "${PORT_CLIENT}";
-        else
-            mensagem="not found";
-            quadro=$(criaQuadro ${mensagem});
-            echo $quadro | nc -q 2 "${IP_CLIENT}" "${PORT_CLIENT}";
-        fi
+        escreveLog "Obtendo resposta da camada de aplicação"
+        page=$(cat ${SERVER_FILE});
+        #echo $page;
+        escreveLog "Respondendo com conteúdo de /$(echo $mensagem) para $IP_CLIENT:$PORT_CLIENT";
+        quadro=$(criaQuadro ${page});
+        echo $quadro | nc -q 2 "${IP_CLIENT}" "${PORT_CLIENT}";
+
         cp /dev/null ${SERVER_FILE};
     fi
 done

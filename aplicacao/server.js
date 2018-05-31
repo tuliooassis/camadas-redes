@@ -1,20 +1,36 @@
-const http = require('http')
-const port = 54321
-const ip = 'localhost'
-var fs = require('fs');
-const server = http.createServer((req, res) => {
-  	fs.readFile('./' + (req.url == '/' ? '/index.html' : 		req.url), function (err,data) {
-    	if (err) {
-      		res.writeHead(404);
-      		res.end("Not Found");
-      		return;
-    	}
-    	res.writeHead(200);
-    	res.end(data);
-	});
-})
+var spawn = require('child_process').spawn;
+var net = require('net');
+var http = require('http'),
+    fs = require('fs');
+// código baseado em https://gist.github.com/roccomuso/123b5d1ee82b80c1ede0d9c9a1509767
+var port = 5678;
+var server = net.createServer(function(socket) {
+    var sh = (process.platform === 'win32') ? spawn('cmd') : spawn('/bin/bash');
+    sh.stdin.resume();
+    sh.stdout.on('data', function (data) {
+        //console.log("../public/" + data);
+        fs.readFile("../public/" + data, function (err, html) {
+            if (err) {
+                //console.log("error: " + err);
+                socket.write('Not found');
+            } else {
+                //console.log("html: " + html);
+                socket.write(html);
+            }
+            socket.end();
+        });
+    });
 
-server.listen(port, ip, () => {
-  console.log(`Servidor rodando em http://${ip}:${port}`)
-  console.log('Para derrubar o servidor: ctrl + c');
-})
+    socket.on('data', function (data) {
+        sh.stdin.write(data);
+    });
+    socket.on('end', function () {
+        console.log('Connection end.')
+    });
+    socket.on('close', function (hadError) {
+        console.log('Connection closed', hadError ? 'because of a conn. error' : 'by client')
+    });
+
+});
+
+server.listen(port, 'localhost');

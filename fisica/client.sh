@@ -1,5 +1,5 @@
 #!/bin/bash
-source common.sh
+source ../fisica/common.sh
 
 # define portas e arquivos de saída
 readonly PORT_LISTEN=54321;
@@ -83,10 +83,14 @@ while true; do
         quadro=$(cat ${CLIENT_FILE_RECEIVE});
         mensagem=$(obterMensagem $quadro);
         escreveLog "Mensagem recebida no quadro: $(echo $mensagem)";
-        echo $mensagem > $1;
-        escreveLog "Finalizando cliente e fechando a porta ${PORT_LISTEN}";
+        if [ "$mensagem" != "not found" ]; then
+            echo $mensagem > $1;
+        fi
+        escreveLog "Finalizando cliente, removendo arquivos e fechando a porta ${PORT_LISTEN}";
         fuser -k -n tcp "${PORT_LISTEN}";
         rm -f "${CLIENT_FILE_RECEIVE}";
+        rm -f "${CLIENT_FILE}";
+        rm -f "${FILE_LOG}";
         exit 0;
     fi
 done
