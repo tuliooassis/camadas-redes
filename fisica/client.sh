@@ -90,7 +90,7 @@ while true; do
         fuser -k -n tcp "${PORT_LISTEN}";
         rm -f "${CLIENT_FILE_RECEIVE}";
         rm -f "${CLIENT_FILE}";
-        rm -f "${FILE_LOG}";
+        #rm -f "${FILE_LOG}";
         exit 0;
     fi
 done

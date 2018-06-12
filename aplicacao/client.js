@@ -1,4 +1,6 @@
-const port = 9876
+const port = 9876;
+//curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+//sudo apt-get install -y nodejs
 
 var express = require('express');
 var app = express();
@@ -13,6 +15,7 @@ var client = app.listen(port, function() {
 // é necessário o ip e a porta do servidor onde o arquivo está
 app.get('/:SERVER_IP/:SERVER_PORT/:FILE_NAME', function (req, res, next) {
   const exec = require('child_process').exec;
+  console.log("aqui");
   var execFisica = exec(`bash ../fisica/client.sh ${req.params.FILE_NAME} ${req.params.SERVER_IP} ${req.params.SERVER_PORT}`,
           (error, stdout, stderr) => {
               fs.readFile(`${req.params.FILE_NAME}`, function (err, html) {
