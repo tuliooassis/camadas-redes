@@ -1,0 +1,5 @@
+# html files
+*.html
+
+# node folder
+node_modules

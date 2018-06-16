@@ -76,9 +76,12 @@ while true; do
         cp /dev/null ${SERVER_FILE};
         #echo "Mensagem recebida no quadro: $(echo $mensagem)";
 
-        #solicita conteúdo para a camada de transporte e envia resposta para o arquivo temporário
-        echo "$mensagem" | nc "localhost" "${PORT_SERVER_TRANS}" > ${SERVER_FILE};
+        #envia conteúdo para a camada de transporte
+        echo "$mensagem" | nc -q 2 "localhost" "${PORT_SERVER_TRANS}" > ${SERVER_FILE};
 
+        # recebe conteudo da camada de transporte
+       # nc "localhost" "${PORT_SERVER_TRANS}" > ${SERVER_FILE}
+        cat ${SERVER_FILE};
         echo "Obtendo resposta da camada de transporte"
         page=$(cat ${SERVER_FILE});
         echo $page;

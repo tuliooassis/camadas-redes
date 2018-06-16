@@ -84,7 +84,7 @@ while true; do
         mensagem=$(obterMensagem $quadro);
         escreveLog "Mensagem recebida no quadro: $(echo $mensagem)";
         if [ "$mensagem" != "not found" ]; then
-            echo $mensagem > $1;
+            echo $mensagem > "../aplicacao/"$1;
         fi
         escreveLog "Finalizando cliente, removendo arquivos e fechando a porta ${PORT_LISTEN}";
         fuser -k -n tcp "${PORT_LISTEN}";

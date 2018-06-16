@@ -12,13 +12,11 @@
 
     // bind socket to port
     $result = socket_bind($socket, $host, $port) or die("Could not bind to socket\n");
-    $resultApp = socket_bind($socketApp, $host, $portApp) or die("Could not bind to socket\n");
+    $resultApp = socket_connect($socketApp, $host, $portApp) or die("Could not connect to server\n");  
 
     // start listening for connections
     $result = socket_listen($socket, 3) or die("Could not set up socket listener\n");
-    $resultApp = socket_listen($socketApp, 3) or die("Could not set up socket listener\n");
 
-    // create sockets
 
     while (1) {
         // accept incoming connections
@@ -28,13 +26,20 @@
         // read client input
         $input = socket_read($spawn, 1024) or die("Could not read input\n");
         // clean up input string
-        //$input = trim($input);
-        echo "Client Message : ".$input;
+        $input = trim($input);
+        echo "Mensagem da camada física: ".$input;
 
-        // responde pra camada fisica a resposta da camada de aplicação
+        // envia para a camada de aplicação a mensagem da camada física
+        socket_write($socketApp, $input, strlen($input)) or die("Could not send data to server\n");
+        
+        echo "\nAguardando resposta da camada de aplicação";
+        // lê a resposta da camada de aplicação
+        $resposta = socket_read($socketApp, 2048) or die("Could not read input\n");
+        echo "\nResposta da camada de aplicação: ".$resposta;
 
-        $output = "ola";
-        socket_write($spawn, $output, strlen ($output)) or die("Could not write output\n");
+        // responde para a camada fisica o conteúdo retornado pela camada de aplicação
+        socket_write($spawn, $resposta, strlen($resposta)) or die("Could not send data to server\n");
+
 
         if ($input == "exit"){
             socket_shutdown($spawn, 2);
