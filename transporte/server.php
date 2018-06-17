@@ -8,11 +8,9 @@
     // don't timeout!
     set_time_limit(0);
     $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
-    $socketApp = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 
     // bind socket to port
     $result = socket_bind($socket, $host, $port) or die("Could not bind to socket\n");
-    $resultApp = socket_connect($socketApp, $host, $portApp) or die("Could not connect to server\n");  
 
     // start listening for connections
     $result = socket_listen($socket, 3) or die("Could not set up socket listener\n");
@@ -22,6 +20,9 @@
         // accept incoming connections
         // spawn another socket to handle communication
         $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
+        
+        $socketApp = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+        $resultApp = socket_connect($socketApp, $host, $portApp) or die("Could not connect to server\n");  
 
         // read client input
         $input = socket_read($spawn, 1024) or die("Could not read input\n");
@@ -40,7 +41,8 @@
         // responde para a camada fisica o conteúdo retornado pela camada de aplicação
         socket_write($spawn, $resposta, strlen($resposta)) or die("Could not send data to server\n");
 
-
+        socket_shutdown($socketApp);
+        socket_close($socketApp);
         if ($input == "exit"){
             socket_shutdown($spawn, 2);
             socket_shutdown($socket, 2);

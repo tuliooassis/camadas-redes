@@ -36,7 +36,8 @@ app.get('/:SERVER_IP/:SERVER_PORT/:FILE_NAME', function (req, res, next) {
                 }
             });
             console.log("Arquivo exibido.")
-        }, 3000);
+            clientTrans.destroy();
+        }, 5000);
     });
 
 });
