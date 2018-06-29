@@ -9,7 +9,8 @@ readonly FILE_LOG=server.log;
 readonly PORT_CLIENT=54321;
 IP_CLIENT=localhost;
 
-readonly PORT_SERVER_TRANS=15935;
+readonly PORT_SERVER_REDE=65535;
+#readonly PORT_SERVER_TRANS=15935;
 
 # fecha porta ao finalizar com CTRL+C
 trap 'escreveLog "Finalizando servidor e fechando a porta ${PORT_LISTEN}"; fuser -k -n tcp ${PORT_LISTEN}; exit' INT
@@ -76,18 +77,19 @@ while true; do
         cp /dev/null ${SERVER_FILE};
         #echo "Mensagem recebida no quadro: $(echo $mensagem)";
 
-        #envia conteúdo para a camada de transporte
-        echo "$mensagem" | nc -q 2 "localhost" "${PORT_SERVER_TRANS}" > ${SERVER_FILE};
+        #envia conteúdo para a camada de rede
+        echo "$mensagem" | nc -q 2 -w 3 "localhost" "${PORT_SERVER_REDE}" > ${SERVER_FILE};
 
-        # recebe conteudo da camada de transporte
+
+        # recebe conteudo da camada de rede
        # nc "localhost" "${PORT_SERVER_TRANS}" > ${SERVER_FILE}
         cat ${SERVER_FILE};
-        echo "Obtendo resposta da camada de transporte"
+        echo "Obtendo resposta da camada de rede"
         page=$(cat ${SERVER_FILE});
         echo $page;
         echo "Respondendo com conteúdo de /$(echo $mensagem) para $IP_CLIENT:$PORT_CLIENT";
         quadro=$(criaQuadro ${page});
-        echo $quadro | nc -q 2 "${IP_CLIENT}" "${PORT_CLIENT}";
+        echo $quadro | nc -q 2 -w 3 "${IP_CLIENT}" "${PORT_CLIENT}";
 
         cp /dev/null ${SERVER_FILE};
     fi

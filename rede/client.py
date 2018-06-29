@@ -1,25 +1,24 @@
 import socket
-HOST = 'localhost'     # Endereco IP do Servidor
+import subprocess
+HOST = '127.0.0.1'     # Endereco IP do Servidor
 PORT = 34567            # Porta que o Servidor esta
-tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #dest = (HOST, PORT)
 #tcp.connect(dest)
-orig = (HOST, PORT)
-tcp.bind(orig)
-tcp.listen(1)
+#orig = (HOST, PORT)
+
+
+s.bind((HOST, PORT))
+s.listen(1)
 while True:
-    con, resultado = tcp.accept()
-    print 'Resultado: ', resultado, con
+    con, cliente = s.accept()
+    print 'Conectado por', cliente
     while True:
         msg = con.recv(1024)
         if not msg: break
-        print 'mensagem: ', msg
-    print 'Finalizando conexao do cliente', resultado
+        print cliente, msg
+	print "Executando a camada fisica"
+	subprocess.call(['../fisica/client.sh','msg'])
+    print 'Finalizando conexao do cliente', cliente
     con.close()
-
-#msg = raw_input("Digite uma mensagem para enviar ao servidor:")
-#while msg <> '\x18':
- #   tcp.send (msg)
-  #  msg = raw_input()
-#tcp.close()
 

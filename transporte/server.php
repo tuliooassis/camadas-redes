@@ -3,7 +3,7 @@
 
     // set some variables
     $host = "localhost";
-    $port = 15935;
+    $port = 15935; //camada rede
     $portApp = 5678;
     // don't timeout!
     set_time_limit(0);
@@ -17,6 +17,7 @@
 
 
     while (1) {
+	echo "oi";
         // accept incoming connections
         // spawn another socket to handle communication
         $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
@@ -28,7 +29,7 @@
         $input = socket_read($spawn, 1024) or die("Could not read input\n");
         // clean up input string
         $input = trim($input);
-        echo "Mensagem da camada física: ".$input;
+        echo "Mensagem da camada de rede: ".$input;
 
         // envia para a camada de aplicação a mensagem da camada física
         socket_write($socketApp, $input, strlen($input)) or die("Could not send data to server\n");
@@ -38,7 +39,7 @@
         $resposta = socket_read($socketApp, 2048) or die("Could not read input\n");
         echo "\nResposta da camada de aplicação: ".$resposta;
 
-        // responde para a camada fisica o conteúdo retornado pela camada de aplicação
+        // responde para a camada de rede o conteúdo retornado pela camada de aplicação
         socket_write($spawn, $resposta, strlen($resposta)) or die("Could not send data to server\n");
 
         socket_shutdown($socketApp);

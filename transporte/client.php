@@ -9,22 +9,28 @@
     echo "Message To server :".$message;
     // create socket
     $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+    
     // connect to server
     $result = socket_bind($socket, $host, $portApp) or die("Could not connect to server\n");  
     $result = socket_listen($socket, 3) or die("Could not set up socket listener\n");
 
 
+     
+
     while (1){
         $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
+
+	$socketRede = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+    	$resultRede = socket_connect($socketRede, $host, $portRede) or die("Could not connect to server\n");
 
     // get server response
         $result = socket_read ($spawn, 1024) or die("Could not read server response\n");
         echo "Mensagem do cliente da aplicação : ".$result;
 
-        $socketRede = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
-        $resultRede = socket_connect($socketRede, $host, $portRede) or die("Could not connect to server\n"); 
+        
+         
        // responde para a camada de rede o conteúdo retornado pela camada de aplicação
-       socket_write($spawn, $resposta, strlen($result)) or die("Could not send data to server\n");
+       socket_write($socketRede, $result, strlen($result)) or die("Could not send data to server\n");
         
        // echo "Executando a camada física";
       //  echo shell_exec('bash ../fisica/client.sh '.$result);
