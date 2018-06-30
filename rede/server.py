@@ -12,16 +12,13 @@ while True:
 	dest = (HOST, PORT_TRANS)
 	s2.connect(dest)
     	print 'Conectado por', server
-   	# while True:
         msg = con.recv(1024)
-        #if not msg: break
     	print server, msg
 	s2.send (msg)
-	data = s2.recv(BUFFER_SIZE) 
-	s.send (data)
-	print "Dado: ", data
-	s2.close()   
-	print "received data:", data	
+	data = s2.recv(BUFFER_SIZE)
+	s2.close()
+	print 'Enviando conteudo para a camada fisica'
+	con.send(data);
+	print "received data:", data
     	print 'Finalizando conexao do server', server
     	con.close()
-

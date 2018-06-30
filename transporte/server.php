@@ -21,9 +21,9 @@
         // accept incoming connections
         // spawn another socket to handle communication
         $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
-        
+
         $socketApp = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
-        $resultApp = socket_connect($socketApp, $host, $portApp) or die("Could not connect to server\n");  
+        $resultApp = socket_connect($socketApp, $host, $portApp) or die("Could not connect to server\n");
 
         // read client input
         $input = socket_read($spawn, 1024) or die("Could not read input\n");
@@ -33,7 +33,7 @@
 
         // envia para a camada de aplicação a mensagem da camada física
         socket_write($socketApp, $input, strlen($input)) or die("Could not send data to server\n");
-        
+
         echo "\nAguardando resposta da camada de aplicação";
         // lê a resposta da camada de aplicação
         $resposta = socket_read($socketApp, 2048) or die("Could not read input\n");
