@@ -7,11 +7,13 @@ Grupo: Luiza Souza, Marcela Viana, Túlio Moreira, Vinícius Silveira
 ## Camada física: Shell Script
 
 Link para vídeo explicativo:
-https://www.youtube.com/watch?v=PBUNACHxNv8&feature=youtu.be
+
+          https://www.youtube.com/watch?v=PBUNACHxNv8&feature=youtu.be
 
 Requisitos:
 > Instalação do comando "arp" no terminal. Pode ser feito com o seguinte comando:
-- sudo apt-get install net-tools
+
+          sudo apt-get install net-tools
 
 Para a implementação da primeira parte da pilha de protocolos (camada física) foi utilizada a linguagem Shell Script. O objetivo é a implementação do modelo cliente-servidor usando uma conexão TCP para fazer a transferência entre dois hosts. A implementação foi dividida em dois códigos: código do servidor (server.sh) e código do cliente (client.sh). O Quadro Ethernet enviado do cliente para o servidor em um arquivo texto está dentro da definição RFC (convertido para bits). Há também dois logs (log do servidor e log do cliente) para que seja possível acompanhar o funcionamento dos programas.
 
@@ -49,16 +51,36 @@ Execução:
           
 	  ./client.sh [filename]
 
+## Camada de transporte: PHP
+Instalação:
+
+          sudo apt-get install php
+
+Execução: 
+          
+          php server.js
+
+## Camada de rede: Python
+Instalação:
+
+          sudo apt-get install python
+
+Execução: 
+          
+          python server.js
+
 ## Camada de aplicação: Nodejs
 
 Requisitos:
 > Instalação do comando "nodejs" no terminal. Pode ser feito com o seguinte comando:
-- sudo apt-get install nodejs
+
+          sudo apt-get install nodejs
 
 ### server.js
 
 Link para vídeo explicativo:
-https://www.youtube.com/watch?v=JfdwxAoFJQA&feature=youtu.be
+
+          https://www.youtube.com/watch?v=JfdwxAoFJQA&feature=youtu.be
 
 São definidas primeiramente 4 variáveis: http requere o objeto do tipo http para que seja possível utilizar este protocolo; port (54321) que é o número da porta em que o servidor escuta; ip que pode ser localhost ou um ip de um computador que está na mesma rede do servidor e fs que guarda um objeto do tipo fs que possibilida a leitura da página http.
 
