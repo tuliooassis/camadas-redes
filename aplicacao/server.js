@@ -12,13 +12,13 @@ server.on('listening', function() {
 
 server.on('connection', function(socket) {
     socket.on('data', function(data) {
-        console.log("../public/" + data);
+        console.log("Arquivo solicitado: ../public/" + data);
         fs.readFile("../public/" + data, function (err, html) {
             if (err) {
-                //console.log("error: " + err);
+                console.log("Erro ao encontrar o arquivo: not found");
                 socket.write('Not found');
             } else {
-                //console.log("html: " + html);
+                console.log("Arquivo encontrado, conteúdo sendo escrito no socket");
                 socket.write(html);
             }
             socket.end();
